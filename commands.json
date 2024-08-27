@@ -1,0 +1,796 @@
+{
+  "commands": [
+  {
+    "full_command": "enable",
+    "shortcuts": ["en"],
+    "description_he": "הפעל מצב הרשאות מוגבר",
+    "description_en": "Enable privileged mode",
+    "modes": ["user"],
+    "action": "enter_privileged"
+  },
+  {
+    "full_command": "disable",
+    "shortcuts": ["dis"],
+    "description_he": "צא ממצב הרשאות מוגבר",
+    "description_en": "Exit privileged mode",
+    "modes": ["privileged"],
+    "action": "exit_mode"
+  },
+  {
+    "full_command": "configure terminal",
+    "shortcuts": ["conf t"],
+    "description_he": "היכנס למצב הגדרות",
+    "description_en": "Enter configuration mode",
+    "modes": ["privileged"],
+    "action": "enter_config"
+  },
+  {
+    "full_command": "exit",
+    "shortcuts": ["ex"],
+    "description_he": "צא ממצב הנוכחי",
+    "description_en": "Exit current mode",
+    "modes": ["privileged", "config", "interface", "router"],
+    "action": "exit_mode"
+  },
+  {
+    "full_command": "end",
+    "shortcuts": ["end"],
+    "description_he": "חזור למצב הרשאות מוגבר",
+    "description_en": "Return to privileged mode",
+    "modes": ["config"],
+    "action": "return_to_privileged"
+  },
+  {
+    "full_command": "show running-config",
+    "shortcuts": ["sh run"],
+    "description_he": "הצג את הקונפיגורציה הנוכחית",
+    "description_en": "Show current configuration",
+    "modes": ["privileged"],
+    "action": "show_running_config"
+  },
+  {
+    "full_command": "show startup-config",
+    "shortcuts": ["sh start"],
+    "description_he": "הצג את קונפיגורציית האתחול",
+    "description_en": "Show startup configuration",
+    "modes": ["privileged"],
+    "action": "show_startup_config"
+  },
+  {
+    "full_command": "copy running-config startup-config",
+    "shortcuts": ["copy run start"],
+    "description_he": "שמור את הקונפיגורציה הנוכחית",
+    "description_en": "Save current configuration",
+    "modes": ["privileged"],
+    "action": "copy_running_to_startup"
+  },
+  {
+    "full_command": "copy running-config tftp",
+    "shortcuts": ["copy run tftp"],
+    "description_he": "שמור את הקונפיגורציה הנוכחית בשרת TFTP",
+    "description_en": "Save running configuration to TFTP server",
+    "modes": ["privileged"],
+    "action": "copy_running_to_tftp"
+  },
+  {
+    "full_command": "show interfaces",
+    "shortcuts": ["sh int"],
+    "description_he": "הצג מידע על ממשקים",
+    "description_en": "Show interface information",
+    "modes": ["privileged"],
+    "action": "show_interfaces"
+  },
+  {
+    "full_command": "show ip interface brief",
+    "shortcuts": ["sh ip int br"],
+    "description_he": "הצג סיכום קצר של ממשקי IP",
+    "description_en": "Show brief IP interface summary",
+    "modes": ["privileged"],
+    "action": "show_ip_interface_brief"
+  },
+  {
+    "full_command": "show version",
+    "shortcuts": ["sh ver"],
+    "description_he": "הצג מידע על גרסת המערכת",
+    "description_en": "Show system version information",
+    "modes": ["privileged"],
+    "action": "show_version"
+  },
+  {
+    "full_command": "reload",
+    "shortcuts": ["rel"],
+    "description_he": "אתחל את המכשיר",
+    "description_en": "Reload the device",
+    "modes": ["privileged"],
+    "action": "reload_device"
+  },
+  {
+    "full_command": "hostname",
+    "shortcuts": ["host"],
+    "description_he": "הגדר שם מארח למכשיר",
+    "description_en": "Set device hostname",
+    "modes": ["config"],
+    "action": "set_hostname"
+  },
+  {
+    "full_command": "interface",
+    "shortcuts": ["int"],
+    "description_he": "היכנס למצב הגדרת ממשק",
+    "description_en": "Enter interface configuration mode",
+    "modes": ["config"],
+    "action": "enter_interface_config"
+  },
+  {
+    "full_command": "no shutdown",
+    "shortcuts": ["no sh"],
+    "description_he": "הפעל ממשק",
+    "description_en": "Enable interface",
+    "modes": ["interface"],
+    "action": "enable_interface"
+  },
+  {
+    "full_command": "shutdown",
+    "shortcuts": ["sh"],
+    "description_he": "כבה ממשק",
+    "description_en": "Disable interface",
+    "modes": ["interface"],
+    "action": "disable_interface"
+  },
+  {
+    "full_command": "show cdp neighbors",
+    "shortcuts": ["sh cdp nei"],
+    "description_he": "הצג שכנים שהתגלו ע\"י CDP",
+    "description_en": "Show CDP neighbors",
+    "modes": ["privileged"],
+    "action": "show_cdp_neighbors"
+  },
+  {
+    "full_command": "show clock",
+    "shortcuts": ["sh clock"],
+    "description_he": "הצג את השעה הנוכחית",
+    "description_en": "Show current time",
+    "modes": ["privileged"],
+    "action": "show_clock"
+  },
+  {
+    "full_command": "clock set",
+    "shortcuts": ["clock set"],
+    "description_he": "הגדר את השעה",
+    "description_en": "Set the time",
+    "modes": ["privileged"],
+    "action": "set_clock"
+  },
+  {
+    "full_command": "show users",
+    "shortcuts": ["sh users"],
+    "description_he": "הצג משתמשים מחוברים",
+    "description_en": "Show connected users",
+    "modes": ["privileged"],
+    "action": "show_users"
+  },
+  {
+    "full_command": "show history",
+    "shortcuts": ["sh hist"],
+    "description_he": "הצג היסטוריית פקודות",
+    "description_en": "Show command history",
+    "modes": ["privileged"],
+    "action": "show_history"
+  },
+  {
+    "full_command": "terminal history size",
+    "shortcuts": ["term hist size"],
+    "description_he": "הגדר גודל היסטוריית פקודות",
+    "description_en": "Set command history size",
+    "modes": ["privileged"],
+    "action": "set_terminal_history_size"
+  },
+  {
+    "full_command": "show tech-support",
+    "shortcuts": ["sh tech"],
+    "description_he": "הצג מידע טכני מקיף",
+    "description_en": "Show comprehensive technical information",
+    "modes": ["privileged"],
+    "action": "show_tech_support"
+  },
+  {
+    "full_command": "show processes",
+    "shortcuts": ["sh proc"],
+    "description_he": "הצג תהליכים פעילים",
+    "description_en": "Show active processes",
+    "modes": ["privileged"],
+    "action": "show_processes"
+  },
+  {
+    "full_command": "show memory",
+    "shortcuts": ["sh mem"],
+    "description_he": "הצג מידע על זיכרון",
+    "description_en": "Show memory information",
+    "modes": ["privileged"],
+    "action": "show_memory"
+  },
+  {
+    "full_command": "debug",
+    "shortcuts": ["debug"],
+    "description_he": "הפעל מצב ניפוי שגיאות",
+    "description_en": "Enable debugging",
+    "modes": ["privileged"],
+    "action": "enable_debugging"
+  },
+  {
+    "full_command": "no debug",
+    "shortcuts": ["no debug"],
+    "description_he": "כבה מצב ניפוי שגיאות",
+    "description_en": "Disable debugging",
+    "modes": ["privileged"],
+    "action": "disable_debugging"
+  },
+  {
+    "full_command": "show debug",
+    "shortcuts": ["sh debug"],
+    "description_he": "הצג הגדרות ניפוי שגיאות",
+    "description_en": "Show debug settings",
+    "modes": ["privileged"],
+    "action": "show_debug_settings"
+  },
+  {
+    "full_command": "ping",
+    "shortcuts": ["ping"],
+    "description_he": "שלח פינג",
+    "description_en": "Send ping",
+    "modes": ["privileged"],
+    "action": "send_ping"
+  },
+  {
+    "full_command": "traceroute",
+    "shortcuts": ["trace"],
+    "description_he": "בצע בדיקת נתיב",
+    "description_en": "Perform traceroute",
+    "modes": ["privileged"],
+    "action": "perform_traceroute"
+  },
+  {
+    "full_command": "show vlan",
+    "shortcuts": ["sh vlan"],
+    "description_he": "הצג מידע על VLAN",
+    "description_en": "Show VLAN information",
+    "modes": ["privileged"],
+    "action": "show_vlan"
+  },
+  {
+    "full_command": "show mac address-table",
+    "shortcuts": ["sh mac"],
+    "description_he": "הצג טבלת כתובות MAC",
+    "description_en": "Show MAC address table",
+    "modes": ["privileged"],
+    "action": "show_mac_address_table"
+  },
+  {
+    "full_command": "switchport mode access",
+    "shortcuts": ["sw mo ac"],
+    "description_he": "הגדר ממשק למצב גישה",
+    "description_en": "Set interface to access mode",
+    "modes": ["interface"],
+    "action": "set_switchport_access_mode"
+  },
+  {
+    "full_command": "switchport mode trunk",
+    "shortcuts": ["sw mo tr"],
+    "description_he": "הגדר ממשק למצב טרנק",
+    "description_en": "Set interface to trunk mode",
+    "modes": ["interface"],
+    "action": "set_switchport_trunk_mode"
+  },
+  {
+    "full_command": "switchport access vlan",
+    "shortcuts": ["sw ac vlan"],
+    "description_he": "הקצה VLAN לממשק במצב גישה",
+    "description_en": "Assign VLAN to access port",
+    "modes": ["interface"],
+    "action": "assign_vlan_to_access_port"
+  },
+  {
+    "full_command": "switchport trunk allowed vlan",
+    "shortcuts": ["sw tr al vlan"],
+    "description_he": "הגדר VLANs מורשים בטרנק",
+    "description_en": "Set allowed VLANs on trunk",
+    "modes": ["interface"],
+    "action": "set_allowed_vlans_on_trunk"
+  },
+  {
+    "full_command": "spanning-tree portfast",
+    "shortcuts": ["span port"],
+    "description_he": "הפעל PortFast על ממשק",
+    "description_en": "Enable PortFast on interface",
+    "modes": ["interface"],
+    "action": "enable_portfast"
+  },
+  {
+    "full_command": "show spanning-tree",
+    "shortcuts": ["sh span"],
+    "description_he": "הצג מידע על Spanning Tree",
+    "description_en": "Show Spanning Tree information",
+    "modes": ["privileged"],
+    "action": "show_spanning_tree_info"
+  },
+  {
+    "full_command": "vlan",
+    "shortcuts": ["vlan"],
+    "description_he": "צור או הגדר VLAN",
+    "description_en": "Create or configure VLAN",
+    "modes": ["config"],
+    "action": "create_or_configure_vlan"
+  },
+  {
+    "full_command": "name",
+    "shortcuts": ["name"],
+    "description_he": "הגדר שם ל-VLAN",
+    "description_en": "Set VLAN name",
+    "modes": ["vlan"],
+    "action": "set_vlan_name"
+  },
+  {
+    "full_command": "show power inline",
+    "shortcuts": ["sh pow in"],
+    "description_he": "הצג מידע על PoE",
+    "description_en": "Show Power over Ethernet information",
+    "modes": ["privileged"],
+    "action": "show_poe_info"
+  },
+  {
+    "full_command": "speed",
+    "shortcuts": ["speed"],
+    "description_he": "הגדר מהירות ממשק",
+    "description_en": "Set interface speed",
+    "modes": ["interface"],
+    "action": "set_interface_speed"
+  },
+  {
+    "full_command": "duplex",
+    "shortcuts": ["duplex"],
+    "description_he": "הגדר מצב דופלקס לממשק",
+    "description_en": "Set interface duplex mode",
+    "modes": ["interface"],
+    "action": "set_interface_duplex_mode"
+  },
+  {
+    "full_command": "mdix auto",
+    "shortcuts": ["mdix auto"],
+    "description_he": "הפעל או כבה Auto-MDIX",
+    "description_en": "Enable or disable Auto-MDIX",
+    "modes": ["interface"],
+    "action": "toggle_auto_mdix"
+  },
+  {
+    "full_command": "show interfaces status",
+    "shortcuts": ["sh int status"],
+    "description_he": "הצג סטטוס ממשקים",
+    "description_en": "Show interface status",
+    "modes": ["privileged"],
+    "action": "show_interface_status"
+  },
+  {
+    "full_command": "show vtp status",
+    "shortcuts": ["sh vtp status"],
+    "description_he": "הצג מצב VTP",
+    "description_en": "Show VTP status",
+    "modes": ["privileged"],
+    "action": "show_vtp_status"
+  },
+  {
+    "full_command": "vtp mode",
+    "shortcuts": ["vtp mode"],
+    "description_he": "הגדר מצב VTP",
+    "description_en": "Set VTP mode",
+    "modes": ["config"],
+    "action": "set_vtp_mode"
+  },
+  {
+    "full_command": "show etherchannel summary",
+    "shortcuts": ["sh ether sum"],
+    "description_he": "הצג סיכום EtherChannel",
+    "description_en": "Show EtherChannel summary",
+    "modes": ["privileged"],
+    "action": "show_etherchannel_summary"
+  },
+  {
+    "full_command": "channel-group",
+    "shortcuts": ["channel-group"],
+    "description_he": "הגדר קבוצת EtherChannel",
+    "description_en": "Configure EtherChannel group",
+    "modes": ["interface"],
+    "action": "configure_etherchannel_group"
+  },
+  {
+    "full_command": "show port-security",
+    "shortcuts": ["sh port-sec"],
+    "description_he": "הצג מידע על Port Security",
+    "description_en": "Show Port Security information",
+    "modes": ["privileged"],
+    "action": "show_port_security_info"
+  },
+  {
+    "full_command": "switchport port-security",
+    "shortcuts": ["sw port-sec"],
+    "description_he": "הפעל Port Security על ממשק",
+    "description_en": "Enable Port Security on interface",
+    "modes": ["interface"],
+    "action": "enable_port_security"
+  },
+  {
+    "full_command": "show storm-control",
+    "shortcuts": ["sh storm"],
+    "description_he": "הצג הגדרות בקרת סערה",
+    "description_en": "Show storm control settings",
+    "modes": ["privileged"],
+    "action": "show_storm_control"
+  },
+  {
+    "full_command": "storm-control",
+    "shortcuts": ["storm"],
+    "description_he": "הגדר בקרת סערה על ממשק",
+    "description_en": "Configure storm control on interface",
+    "modes": ["interface"],
+    "action": "configure_storm_control"
+  },
+  {
+    "full_command": "show interfaces trunk",
+    "shortcuts": ["sh int trunk"],
+    "description_he": "הצג מידע על ממשקי טרנק",
+    "description_en": "Show trunk interface information",
+    "modes": ["privileged"],
+    "action": "show_trunk_interface_info"
+  },
+  {
+    "full_command": "switchport trunk native vlan",
+    "shortcuts": ["sw tr na vlan"],
+    "description_he": "הגדר VLAN מקורי לטרנק",
+    "description_en": "Set native VLAN for trunk",
+    "modes": ["interface"],
+    "action": "set_native_vlan_for_trunk"
+  },
+  {
+    "full_command": "spanning-tree mode",
+    "shortcuts": ["span mode"],
+    "description_he": "הגדר מצב Spanning Tree",
+    "description_en": "Set Spanning Tree mode",
+    "modes": ["config"],
+    "action": "set_spanning_tree_mode"
+  },
+  {
+    "full_command": "spanning-tree vlan",
+    "shortcuts": ["span vlan"],
+    "description_he": "הגדר עדיפויות Spanning Tree ל-VLAN",
+    "description_en": "Set Spanning Tree priorities for VLAN",
+    "modes": ["config"],
+    "action": "set_spanning_tree_vlan_priority"
+  },
+  {
+    "full_command": "show mac address-table aging-time",
+    "shortcuts": ["sh mac aging"],
+    "description_he": "הצג זמן התיישנות של טבלת MAC",
+    "description_en": "Show MAC address table aging time",
+    "modes": ["privileged"],
+    "action": "show_mac_aging_time"
+  },
+  {
+    "full_command": "mac address-table aging-time",
+    "shortcuts": ["mac aging"],
+    "description_he": "הגדר זמן התיישנות של טבלת MAC",
+    "description_en": "Set MAC address table aging time",
+    "modes": ["config"],
+    "action": "set_mac_aging_time"
+  },
+  {
+    "full_command": "show interface counters",
+    "shortcuts": ["sh int count"],
+    "description_he": "הצג מונים של ממשק",
+    "description_en": "Show interface counters",
+    "modes": ["privileged"],
+    "action": "show_interface_counters"
+  },
+  {
+    "full_command": "clear counters",
+    "shortcuts": ["clear count"],
+    "description_he": "אפס מונים של ממשק",
+    "description_en": "Clear interface counters",
+    "modes": ["privileged"],
+    "action": "clear_interface_counters"
+  },
+  {
+    "full_command": "show ip route",
+    "shortcuts": ["sh ip ro"],
+    "description_he": "הצג טבלת ניתוב IP",
+    "description_en": "Show IP routing table",
+    "modes": ["privileged"],
+    "action": "show_ip_route"
+  },
+  {
+    "full_command": "ip route",
+    "shortcuts": ["ip route"],
+    "description_he": "הגדר נתיב סטטי",
+    "description_en": "Configure static route",
+    "modes": ["config"],
+    "action": "configure_static_route"
+  },
+  {
+    "full_command": "router",
+    "shortcuts": ["router"],
+    "description_he": "היכנס למצב הגדרת פרוטוקול ניתוב",
+    "description_en": "Enter routing protocol configuration",
+    "modes": ["config"],
+    "action": "enter_routing_protocol_config"
+  },
+  {
+    "full_command": "show protocols",
+    "shortcuts": ["sh prot"],
+    "description_he": "הצג פרוטוקולים מופעלים",
+    "description_en": "Show enabled protocols",
+    "modes": ["privileged"],
+    "action": "show_enabled_protocols"
+  },
+  {
+    "full_command": "ip nat inside",
+    "shortcuts": ["ip nat in"],
+    "description_he": "הגדר ממשק כפנימי ל-NAT",
+    "description_en": "Set interface as NAT inside",
+    "modes": ["interface"],
+    "action": "set_interface_as_nat_inside"
+  },
+  {
+    "full_command": "ip nat outside",
+    "shortcuts": ["ip nat out"],
+    "description_he": "הגדר ממשק כחיצוני ל-NAT",
+    "description_en": "Set interface as NAT outside",
+    "modes": ["interface"],
+    "action": "set_interface_as_nat_outside"
+  },
+  {
+    "full_command": "ip nat inside source",
+    "shortcuts": ["ip nat in so"],
+    "description_he": "הגדר כלל NAT",
+    "description_en": "Configure NAT rule",
+    "modes": ["config"],
+    "action": "configure_nat_rule"
+  },
+  {
+    "full_command": "show ip nat translations",
+    "shortcuts": ["sh ip nat trans"],
+    "description_he": "הצג תרגומי NAT",
+    "description_en": "Show NAT translations",
+    "modes": ["privileged"],
+    "action": "show_nat_translations"
+  },
+  {
+    "full_command": "access-list",
+    "shortcuts": ["acc"],
+    "description_he": "הגדר רשימת גישה",
+    "description_en": "Configure access list",
+    "modes": ["config"],
+    "action": "configure_access_list"
+  },
+  {
+    "full_command": "show access-lists",
+    "shortcuts": ["sh acc"],
+    "description_he": "הצג רשימות גישה",
+    "description_en": "Show access lists",
+    "modes": ["privileged"],
+    "action": "show_access_lists"
+  },
+  {
+    "full_command": "ip access-group",
+    "shortcuts": ["ip acc-gr"],
+    "description_he": "החל רשימת גישה על ממשק",
+    "description_en": "Apply access list to interface",
+    "modes": ["interface"],
+    "action": "apply_access_list_to_interface"
+  },
+  {
+    "full_command": "show ip protocols",
+    "shortcuts": ["sh ip proto"],
+    "description_he": "הצג מידע על פרוטוקולי ניתוב",
+    "description_en": "Show routing protocol information",
+    "modes": ["privileged"],
+    "action": "show_routing_protocol_info"
+  },
+  {
+    "full_command": "router ospf",
+    "shortcuts": ["ro ospf"],
+    "description_he": "היכנס למצב הגדרת OSPF",
+    "description_en": "Enter OSPF configuration mode",
+    "modes": ["config"],
+    "action": "enter_ospf_config"
+  },
+  {
+    "full_command": "network",
+    "shortcuts": ["net"],
+    "description_he": "הכרז על רשת והקצה אותה לאזור OSPF",
+    "description_en": "Advertise network and assign to OSPF area",
+    "modes": ["router"],
+    "action": "advertise_network_ospf"
+  },
+  {
+    "full_command": "show ip ospf",
+    "shortcuts": ["sh ip ospf"],
+    "description_he": "הצג מידע על פרוטוקול OSPF",
+    "description_en": "Show OSPF protocol information",
+    "modes": ["privileged"],
+    "action": "show_ospf_info"
+  },
+  {
+    "full_command": "show ip ospf neighbor",
+    "shortcuts": ["sh ip ospf nei"],
+    "description_he": "הצג שכנים ב-OSPF",
+    "description_en": "Show OSPF neighbors",
+    "modes": ["privileged"],
+    "action": "show_ospf_neighbors"
+  },
+  {
+    "full_command": "show ip ospf database",
+    "shortcuts": ["sh ip ospf db"],
+    "description_he": "הצג מסד נתונים של OSPF",
+    "description_en": "Show OSPF database",
+    "modes": ["privileged"],
+    "action": "show_ospf_database"
+  },
+  {
+    "full_command": "ip ospf cost",
+    "shortcuts": ["ip ospf cost"],
+    "description_he": "הגדר את עלות OSPF לממשק",
+    "description_en": "Set OSPF cost on an interface",
+    "modes": ["interface"],
+    "action": "set_ospf_cost"
+  },
+  {
+    "full_command": "default-information originate",
+    "shortcuts": ["def-info ori"],
+    "description_he": "הכרז על שער ברירת מחדל",
+    "description_en": "Advertise default route",
+    "modes": ["router"],
+    "action": "advertise_default_route"
+  },
+  {
+    "full_command": "router eigrp",
+    "shortcuts": ["ro eigrp"],
+    "description_he": "היכנס למצב הגדרת EIGRP",
+    "description_en": "Enter EIGRP configuration mode",
+    "modes": ["config"],
+    "action": "enter_eigrp_config"
+  },
+  {
+    "full_command": "show ip eigrp neighbors",
+    "shortcuts": ["sh ip ei nei"],
+    "description_he": "הצג שכני EIGRP",
+    "description_en": "Show EIGRP neighbors",
+    "modes": ["privileged"],
+    "action": "show_eigrp_neighbors"
+  },
+  {
+    "full_command": "show ip eigrp topology",
+    "shortcuts": ["sh ip ei topo"],
+    "description_he": "הצג טופולוגיית EIGRP",
+    "description_en": "Show EIGRP topology",
+    "modes": ["privileged"],
+    "action": "show_eigrp_topology"
+  },
+  {
+    "full_command": "passive-interface",
+    "shortcuts": ["pass-int"],
+    "description_he": "הפוך ממשק לפסיבי ב-EIGRP",
+    "description_en": "Make an interface passive in EIGRP",
+    "modes": ["router"],
+    "action": "make_interface_passive_eigrp"
+  },
+  {
+    "full_command": "variance",
+    "shortcuts": ["var"],
+    "description_he": "הגדר Variance כדי לאפשר ניתוב חלופי ב-EIGRP",
+    "description_en": "Configure variance to allow alternate routing",
+    "modes": ["router"],
+    "action": "configure_variance_eigrp"
+  },
+  {
+    "full_command": "redistribute",
+    "shortcuts": ["redist"],
+    "description_he": "הפץ נתיבים מפרוטוקול אחר ל-EIGRP",
+    "description_en": "Redistribute routes from another protocol into EIGRP",
+    "modes": ["router"],
+    "action": "redistribute_routes_eigrp"
+  },
+  {
+    "full_command": "ip dhcp pool",
+    "shortcuts": ["ip dhcp pool"],
+    "description_he": "הגדר מאגר DHCP",
+    "description_en": "Configure DHCP pool",
+    "modes": ["config"],
+    "action": "configure_dhcp_pool"
+  },
+  {
+    "full_command": "ip dhcp excluded-address",
+    "shortcuts": ["ip dhcp ex"],
+    "description_he": "הגדר כתובות מוחרגות מ-DHCP",
+    "description_en": "Set excluded addresses for DHCP",
+    "modes": ["config"],
+    "action": "set_dhcp_excluded_addresses"
+  },
+  {
+    "full_command": "show ip dhcp binding",
+    "shortcuts": ["sh ip dhcp bind"],
+    "description_he": "הצג הקצאות DHCP",
+    "description_en": "Show DHCP bindings",
+    "modes": ["privileged"],
+    "action": "show_dhcp_bindings"
+  },
+  {
+    "full_command": "ip helper-address",
+    "shortcuts": ["ip help"],
+    "description_he": "הגדר כתובת עזר DHCP",
+    "description_en": "Set DHCP helper address",
+    "modes": ["interface"],
+    "action": "set_dhcp_helper_address"
+  },
+  {
+    "full_command": "ip routing",
+    "shortcuts": ["ip routing"],
+    "description_he": "הפעל ניתוב IP",
+    "description_en": "Enable IP routing",
+    "modes": ["config"],
+    "action": "enable_ip_routing"
+  },
+  {
+    "full_command": "router rip",
+    "shortcuts": ["ro rip"],
+    "description_he": "הגדר פרוטוקול ניתוב RIP",
+    "description_en": "Configure RIP routing protocol",
+    "modes": ["config"],
+    "action": "configure_rip"
+  },
+  {
+    "full_command": "show ip rip database",
+    "shortcuts": ["sh ip rip db"],
+    "description_he": "הצג מסד נתונים של RIP",
+    "description_en": "Show RIP database",
+    "modes": ["privileged"],
+    "action": "show_rip_database"
+  },
+  {
+    "full_command": "ip policy route-map",
+    "shortcuts": ["ip pol route"],
+    "description_he": "החל מפת ניתוב מדיניות",
+    "description_en": "Apply policy-based routing",
+    "modes": ["interface"],
+    "action": "apply_policy_based_routing"
+  },
+  {
+    "full_command": "show route-map",
+    "shortcuts": ["sh route-map"],
+    "description_he": "הצג מפות ניתוב",
+    "description_en": "Show route maps",
+    "modes": ["privileged"],
+    "action": "show_route_maps"
+  },
+  {
+    "full_command": "ip cef",
+    "shortcuts": ["ip cef"],
+    "description_he": "הפעל Cisco Express Forwarding",
+    "description_en": "Enable Cisco Express Forwarding",
+    "modes": ["config"],
+    "action": "enable_cef"
+  },
+  {
+    "full_command": "show ip cef",
+    "shortcuts": ["sh ip cef"],
+    "description_he": "הצג טבלת CEF",
+    "description_en": "Show CEF table",
+    "modes": ["privileged"],
+    "action": "show_cef_table"
+  },
+  {
+    "full_command": "ip virtual-reassembly",
+    "shortcuts": ["ip virt"],
+    "description_he": "הפעל הרכבה מחדש וירטואלית של IP",
+    "description_en": "Enable IP virtual reassembly",
+    "modes": ["interface"],
+    "action": "enable_ip_virtual_reassembly"
+  }
+  ]
+}
