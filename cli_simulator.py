@@ -1,5 +1,3 @@
-# cli_simulator.py
-
 import cmd
 import command_parser
 import data_manager
@@ -26,7 +24,7 @@ class CLISimulator(cmd.Cmd):
     def set_device_type(self, device_type):
         self.device_type = device_type
         self.data_manager.load_device_state()
-        self.hostname = self.data_manager.get_device_state("hostname")
+        self.hostname = self.data_manager.get_device_state("hostname") or "Router"
         self.update_prompt()
         self.logger.info(f"Device type set to {device_type}")
 
@@ -101,57 +99,6 @@ class CLISimulator(cmd.Cmd):
         all_commands = [cmd['full_command'] for cmd in self.commands if self.mode in cmd['modes']]
         suggestions = difflib.get_close_matches(command, all_commands, n=3, cutoff=0.6)
         return suggestions
-
-    def run(self):
-        self.logger.info("Starting CLI Simulator")
-        print(f"Starting the Cisco CLI Simulator in {self.device_type} mode...")
-        self.choose_language()
-        while self.running:
-            try:
-                user_input = input(self.prompt).strip()
-                if not user_input:
-                    continue
-                self.history.append(user_input)
-                self.logger.debug(f"User input: {user_input}")
-                if user_input.lower() == "exit":
-                    self.exit_current_mode()
-                else:
-                    try:
-                        self.command_parser.parse(user_input, self)
-                    except Exception as e:
-                        self.logger.error(f"Error executing command: {str(e)}")
-                        print(f"שגיאה בביצוע הפקודה: {str(e)}")
-                        suggestions = self.suggest_correction(user_input)
-                        if suggestions:
-                            print("האם התכוונת לאחת מהפקודות הבאות?")
-                            for suggestion in suggestions:
-                                print(f"- {suggestion}")
-            except KeyboardInterrupt:
-                self.logger.info("Keyboard interrupt received")
-                print("\nInterrupted")
-            except EOFError:
-                self.logger.info("EOF received, exiting")
-                print("\nLogout")
-                self.running = False
-
-    def exit_current_mode(self):
-        self.logger.info(f"Exiting mode: {self.mode}")
-        if self.mode == "user":
-            print("שומר את מצב המכשיר...")
-            self.data_manager.save_device_state()
-            print("יציאה מהסימולטור...")
-            self.running = False
-        elif self.mode == "privileged":
-            self.mode = "user"
-            self.update_prompt()
-        elif self.mode.startswith("config-"):
-            self.mode = "config"
-            self.update_prompt()
-        elif self.mode == "config":
-            self.mode = "privileged"
-            self.update_prompt()
-        else:
-            print("לא ניתן לצאת מהמצב הנוכחי.")
 
     def update_prompt(self):
         if self.mode == "user":
