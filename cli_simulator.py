@@ -1,160 +1,183 @@
-# test_cli_simulator.py
+# cli_simulator.py
 
-import unittest
-from unittest.mock import Mock, patch
-from cli_simulator import CLISimulator
-from data_manager import DataManager
-from command_parser import CommandParser, CommandError
+import cmd
+import command_parser
+import data_manager
+import difflib
+from logger import Logger
 
-class TestCLISimulator(unittest.TestCase):
+class CLISimulator(cmd.Cmd):
+    def __init__(self):
+        super().__init__()
+        self.device_type = None
+        self.language = None
+        self.prompt = ""
+        self.intro = "ברוכים הבאים לסימולטור CLI של סיסקו!\n"
+        self.data_manager = data_manager.DataManager()
+        self.command_parser = command_parser.CommandParser(self.data_manager)
+        self.commands = self.data_manager.load_commands()
+        self.history = []
+        self.running = True
+        self.mode = "user"
+        self.hostname = "Router"
+        self.logger = Logger()
+        self.logger.info("CLI Simulator initialized")
 
-    def setUp(self):
-        self.simulator = CLISimulator()
-        self.simulator.data_manager = Mock(spec=DataManager)
-        self.simulator.command_parser = Mock(spec=CommandParser)
+    def set_device_type(self, device_type):
+        if device_type not in ["router", "switch"]:
+            raise ValueError("Invalid device type. Choose 'router' or 'switch'.")
+        self.device_type = device_type
+        self.data_manager.load_device_state()
+        self.hostname = self.data_manager.get_device_state("hostname") or "Router"
+        self.update_prompt()
+        self.logger.info(f"Device type set to {device_type}")
 
-    def test_set_device_type_valid(self):
-        self.simulator.set_device_type("router")
-        self.assertEqual(self.simulator.device_type, "router")
-        self.simulator.data_manager.load_device_state.assert_called_once()
+    def set_language(self, language):
+        if language not in ["he", "en"]:
+            raise ValueError("Invalid language. Choose 'he' for Hebrew or 'en' for English.")
+        self.language = language
+        self.logger.info(f"Language set to {language}")
 
-    def test_set_device_type_invalid(self):
-        with self.assertRaises(ValueError):
-            self.simulator.set_device_type("invalid_device")
+    def start(self):
+        self.logger.info("Starting CLI Simulator")
+        print(self.intro)
+        try:
+            self.cmdloop()
+        except KeyboardInterrupt:
+            print("\nExiting CLI Simulator...")
+        except Exception as e:
+            self.logger.error(f"Unexpected error: {str(e)}")
+            print(f"An unexpected error occurred: {str(e)}")
+        finally:
+            self.do_exit("")
 
-    def test_set_language_valid(self):
-        self.simulator.set_language("he")
-        self.assertEqual(self.simulator.language, "he")
+    def postcmd(self, stop, line):
+        if line:
+            self.history.append(line)
+        return stop
 
-    def test_set_language_invalid(self):
-        with self.assertRaises(ValueError):
-            self.simulator.set_language("invalid_language")
+    def precmd(self, line):
+        line = line.strip()
+        if not line:
+            return line
+        if line == "?":
+            self.print_help()
+            return ""
+        if line.lower() in ['quit', 'exit', 'bye']:
+            return "exit"
+        if line.lower() in ['help', 'h']:
+            return "?"
+        return line
 
-    def test_update_prompt(self):
-        self.simulator.hostname = "TestRouter"
-        self.simulator.mode = "privileged"
-        self.simulator.update_prompt()
-        self.assertEqual(self.simulator.prompt, "TestRouter# ")
+    def print_help(self):
+        self.logger.debug("Displaying help")
+        print("פקודות זמינות:")
+        for command in self.commands:
+            if self.mode in command['modes']:
+                print(f"{command['full_command']}: {command['description_' + self.language]}")
 
-    def test_exit_current_mode_from_user(self):
-        self.simulator.mode = "user"
-        self.simulator.exit_current_mode()
-        self.assertFalse(self.simulator.running)
+    def do_exit(self, args):
+        self.logger.info("Exiting CLI Simulator")
+        print("שומר את מצב המכשיר...")
+        try:
+            self.data_manager.save_device_state()
+            print("מצב המכשיר נשמר בהצלחה.")
+        except Exception as e:
+            self.logger.error(f"Error saving device state: {str(e)}")
+            print(f"שגיאה בשמירת מצב המכשיר: {str(e)}")
+        print("ביי!")
+        return True
 
-    def test_exit_current_mode_from_privileged(self):
-        self.simulator.mode = "privileged"
-        self.simulator.exit_current_mode()
-        self.assertEqual(self.simulator.mode, "user")
+    def default(self, line):
+        self.logger.debug(f"Executing command: {line}")
+        try:
+            result = self.command_parser.parse_command(line, self.device_type, self.mode)
+            if result:
+                print(result)
+                if "Entering" in result or "Exiting" in result:
+                    self.update_mode(result)
+            else:
+                self.logger.warning(f"Unknown command: {line}")
+                print(f"פקודה לא מוכרת: {line}")
+                suggestions = self.suggest_correction(line)
+                if suggestions:
+                    print("האם התכוונת לאחת מהפקודות הבאות?")
+                    for suggestion in suggestions:
+                        print(f"- {suggestion}")
+                else:
+                    print("לא נמצאו הצעות לתיקון. הקלד '?' לעזרה.")
+        except Exception as e:
+            self.logger.error(f"Error executing command: {str(e)}")
+            print(f"שגיאה בביצוע הפקודה: {str(e)}")
 
-    @patch('builtins.print')
-    def test_print_help(self, mock_print):
-        self.simulator.commands = [
-            {"full_command": "show", "description_en": "Show commands", "modes": ["user"]},
-            {"full_command": "configure", "description_en": "Configure", "modes": ["privileged"]}
-        ]
-        self.simulator.mode = "user"
-        self.simulator.language = "en"
-        self.simulator.print_help()
-        mock_print.assert_called_with("show: Show commands")
+    def update_mode(self, result):
+        if "Entering privileged mode" in result:
+            self.mode = "privileged"
+        elif "Entering configuration mode" in result:
+            self.mode = "config"
+        elif "Entering interface configuration mode" in result:
+            self.mode = "interface"
+        elif "Exiting current mode" in result:
+            if self.mode == "interface":
+                self.mode = "config"
+            elif self.mode == "config":
+                self.mode = "privileged"
+            elif self.mode == "privileged":
+                self.mode = "user"
+        self.update_prompt()
 
-    def test_suggest_correction(self):
-        self.simulator.commands = [
-            {"full_command": "show interfaces", "modes": ["privileged"]},
-            {"full_command": "show ip route", "modes": ["privileged"]}
-        ]
-        self.simulator.mode = "privileged"
-        suggestions = self.simulator.suggest_correction("show int")
-        self.assertIn("show interfaces", suggestions)
+    def emptyline(self):
+        pass
 
-    @patch('builtins.print')
-    def test_do_exit(self, mock_print):
-        result = self.simulator.do_exit("")
-        self.assertTrue(result)
-        self.simulator.data_manager.save_device_state.assert_called_once()
+    def completedefault(self, text, line, begidx, endidx):
+        return self.complete_command(text, line, begidx, endidx)
 
-    def test_default_known_command(self):
-        self.simulator.command_parser.parse_command.return_value = "Command executed"
-        self.simulator.default("show interfaces")
-        self.simulator.command_parser.parse_command.assert_called_with("show interfaces", self.simulator.device_type, self.simulator.mode)
+    def complete_command(self, text, line, begidx, endidx):
+        return self.command_parser.complete_command(text, line[:begidx].strip(), self.mode)
 
-    def test_default_unknown_command(self):
-        self.simulator.command_parser.parse_command.side_effect = CommandError("Unknown command")
-        with patch('builtins.print') as mock_print:
-            self.simulator.default("unknown_command")
-            mock_print.assert_called_with("פקודה לא מוכרת: unknown_command")
+    def suggest_correction(self, command):
+        all_commands = [cmd['full_command'] for cmd in self.commands if self.mode in cmd['modes']]
+        suggestions = difflib.get_close_matches(command, all_commands, n=3, cutoff=0.6)
+        return suggestions
 
-class TestCommandParser(unittest.TestCase):
+    def update_prompt(self):
+        if self.mode == "user":
+            self.prompt = f"{self.hostname}> "
+        elif self.mode == "privileged":
+            self.prompt = f"{self.hostname}# "
+        elif self.mode == "config":
+            self.prompt = f"{self.hostname}(config)# "
+        elif self.mode.startswith("config-"):
+            self.prompt = f"{self.hostname}({self.mode})# "
+        elif self.mode == "interface":
+            self.prompt = f"{self.hostname}(config-if)# "
+        elif self.mode == "vlan":
+            self.prompt = f"{self.hostname}(config-vlan)# "
+        elif self.mode == "router":
+            self.prompt = f"{self.hostname}(config-router)# "
 
-    def setUp(self):
-        self.data_manager = Mock(spec=DataManager)
-        self.parser = CommandParser(self.data_manager)
+    def do_hostname(self, arg):
+        if self.mode == "config":
+            try:
+                self.hostname = arg
+                self.data_manager.update_hostname(arg)
+                self.update_prompt()
+                self.logger.info(f"Hostname set to {arg}")
+                print(f"Hostname set to {arg}")
+            except Exception as e:
+                self.logger.error(f"Error setting hostname: {str(e)}")
+                print(f"שגיאה בהגדרת שם המארח: {str(e)}")
+        else:
+            print("Command available only in configuration mode")
 
-    def test_parse_command_valid(self):
-        self.parser.commands = [
-            {"full_command": "show interfaces", "action": "show_interfaces", "modes": ["privileged"]}
-        ]
-        result = self.parser.parse_command("show interfaces", "router", "privileged")
-        self.assertIsNotNone(result)
+    def do_show(self, arg):
+        try:
+            result = self.command_parser.parse_command(f"show {arg}", self.device_type, self.mode)
+            print(result)
+        except Exception as e:
+            self.logger.error(f"Error executing show command: {str(e)}")
+            print(f"שגיאה בביצוע פקודת show: {str(e)}")
 
-    def test_parse_command_invalid(self):
-        with self.assertRaises(CommandError):
-            self.parser.parse_command("invalid command", "router", "user")
-
-    def test_set_ip_address_valid(self):
-        args = ["GigabitEthernet0/0", "192.168.1.1", "255.255.255.0"]
-        result = self.parser.set_ip_address("router", args)
-        self.assertIn("IP address 192.168.1.1/255.255.255.0 set on interface GigabitEthernet0/0", result)
-
-    def test_set_ip_address_invalid(self):
-        args = ["GigabitEthernet0/0", "invalid_ip", "invalid_mask"]
-        with self.assertRaises(CommandError):
-            self.parser.set_ip_address("router", args)
-
-    def test_configure_static_route_valid(self):
-        args = ["192.168.2.0", "255.255.255.0", "10.0.0.1"]
-        result = self.parser.configure_static_route("router", args)
-        self.assertIn("Static route added: 192.168.2.0/255.255.255.0 via 10.0.0.1", result)
-
-    def test_configure_static_route_invalid(self):
-        args = ["invalid_network", "invalid_mask", "invalid_next_hop"]
-        with self.assertRaises(CommandError):
-            self.parser.configure_static_route("router", args)
-
-class TestDataManager(unittest.TestCase):
-
-    @patch('sqlite3.connect')
-    def setUp(self, mock_connect):
-        self.data_manager = DataManager(':memory:')
-        self.data_manager.cursor = Mock()
-        self.data_manager.conn = Mock()
-
-    def test_update_hostname(self):
-        self.data_manager.update_hostname("NewHostname")
-        self.data_manager.cursor.execute.assert_called_with(
-            "INSERT OR REPLACE INTO device_state (key, value) VALUES (?, ?)",
-            ("hostname", '"NewHostname"')
-        )
-
-    def test_add_interface(self):
-        self.data_manager.get_device_state = Mock(return_value={})
-        self.data_manager.add_interface("GigabitEthernet0/0", {"ip": "192.168.1.1"})
-        self.data_manager.cursor.execute.assert_called_with(
-            "INSERT OR REPLACE INTO device_state (key, value) VALUES (?, ?)",
-            ("interfaces", '{"GigabitEthernet0/0": {"ip": "192.168.1.1"}}')
-        )
-
-    def test_add_route(self):
-        self.data_manager.get_device_state = Mock(return_value=[])
-        self.data_manager.add_route("192.168.2.0/24", "10.0.0.1")
-        self.data_manager.cursor.execute.assert_called()  # We can't check the exact arguments due to the timestamp
-
-    def test_add_vlan(self):
-        self.data_manager.get_device_state = Mock(return_value={})
-        self.data_manager.add_vlan("10", "Sales")
-        self.data_manager.cursor.execute.assert_called_with(
-            "INSERT OR REPLACE INTO device_state (key, value) VALUES (?, ?)",
-            ("vlans", '{"10": {"name": "Sales", "interfaces": []}}')
-        )
-
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    simulator = CLISimulator()
+    simulator.start()
