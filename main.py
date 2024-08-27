@@ -1,4 +1,3 @@
-import cmd
 import cli_simulator
 
 def main():
