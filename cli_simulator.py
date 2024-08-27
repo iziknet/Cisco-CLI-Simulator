@@ -1,3 +1,5 @@
+# cli_simulator.py
+
 import cmd
 import command_parser
 import data_manager
@@ -71,9 +73,12 @@ class CLISimulator(cmd.Cmd):
 
     def default(self, line):
         self.logger.debug(f"Executing command: {line}")
-        result = self.command_parser.parse_command(line, self.device_type, self.commands, self.mode)
+        result = self.command_parser.parse_command(line, self.device_type, self.mode)
         if result:
             print(result)
+            # בדוק אם התוצאה מכילה שינוי במצב
+            if "Entering" in result or "Exiting" in result:
+                self.update_mode(result)
         else:
             self.logger.warning(f"Unknown command: {line}")
             print(f"פקודה לא מוכרת: {line}")
@@ -85,6 +90,22 @@ class CLISimulator(cmd.Cmd):
             else:
                 print("לא נמצאו הצעות לתיקון. הקלד '?' לעזרה.")
 
+    def update_mode(self, result):
+        if "Entering privileged mode" in result:
+            self.mode = "privileged"
+        elif "Entering configuration mode" in result:
+            self.mode = "config"
+        elif "Entering interface configuration mode" in result:
+            self.mode = "interface"
+        elif "Exiting current mode" in result:
+            if self.mode == "interface":
+                self.mode = "config"
+            elif self.mode == "config":
+                self.mode = "privileged"
+            elif self.mode == "privileged":
+                self.mode = "user"
+        self.update_prompt()
+
     def emptyline(self):
         pass
 
@@ -92,8 +113,7 @@ class CLISimulator(cmd.Cmd):
         return self.complete_command(text, line, begidx, endidx)
 
     def complete_command(self, text, line, begidx, endidx):
-        return [cmd['full_command'] for cmd in self.commands 
-                if cmd['full_command'].startswith(text) and self.mode in cmd['modes']]
+        return self.command_parser.complete_command(text, line[:begidx].strip(), self.mode)
 
     def suggest_correction(self, command):
         all_commands = [cmd['full_command'] for cmd in self.commands if self.mode in cmd['modes']]
@@ -109,6 +129,13 @@ class CLISimulator(cmd.Cmd):
             self.prompt = f"{self.hostname}(config)# "
         elif self.mode.startswith("config-"):
             self.prompt = f"{self.hostname}({self.mode})# "
+        elif self.mode == "interface":
+            self.prompt = f"{self.hostname}(config-if)# "
+        elif self.mode == "vlan":
+            self.prompt = f"{self.hostname}(config-vlan)# "
+        elif self.mode == "router":
+            self.prompt = f"{self.hostname}(config-router)# "
+        # הוסף כאן עוד מצבים לפי הצורך
 
     def do_hostname(self, arg):
         if self.mode == "config":
@@ -121,18 +148,8 @@ class CLISimulator(cmd.Cmd):
             print("Command available only in configuration mode")
 
     def do_show(self, arg):
-        if arg == "running-config":
-            device_state = self.data_manager.get_device_state()
-            print("Current configuration:")
-            print(f"hostname {device_state['hostname']}")
-            for interface, config in device_state['interfaces'].items():
-                print(f"interface {interface}")
-                for key, value in config.items():
-                    print(f" {key} {value}")
-            self.logger.info("Displayed running configuration")
-        else:
-            self.logger.warning(f"Unsupported show command: {arg}")
-            print(f"Unsupported show command: {arg}")
+        result = self.command_parser.parse_command(f"show {arg}", self.device_type, self.mode)
+        print(result)
 
 if __name__ == "__main__":
     simulator = CLISimulator()
