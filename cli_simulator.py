@@ -24,6 +24,8 @@ class CLISimulator(cmd.Cmd):
         self.logger.info("CLI Simulator initialized")
 
     def set_device_type(self, device_type):
+        if device_type not in ["router", "switch"]:
+            raise ValueError("Invalid device type. Choose 'router' or 'switch'.")
         self.device_type = device_type
         self.data_manager.load_device_state()
         self.hostname = self.data_manager.get_device_state("hostname") or "Router"
@@ -31,30 +33,40 @@ class CLISimulator(cmd.Cmd):
         self.logger.info(f"Device type set to {device_type}")
 
     def set_language(self, language):
+        if language not in ["he", "en"]:
+            raise ValueError("Invalid language. Choose 'he' for Hebrew or 'en' for English.")
         self.language = language
         self.logger.info(f"Language set to {language}")
 
     def start(self):
         self.logger.info("Starting CLI Simulator")
         print(self.intro)
-        self.cmdloop()
+        try:
+            self.cmdloop()
+        except KeyboardInterrupt:
+            print("\nExiting CLI Simulator...")
+        except Exception as e:
+            self.logger.error(f"Unexpected error: {str(e)}")
+            print(f"An unexpected error occurred: {str(e)}")
+        finally:
+            self.do_exit("")
 
     def postcmd(self, stop, line):
-        self.history.append(line)
+        if line:
+            self.history.append(line)
         return stop
 
     def precmd(self, line):
-        if line == "":
+        line = line.strip()
+        if not line:
             return line
         if line == "?":
             self.print_help()
             return ""
-
         if line.lower() in ['quit', 'exit', 'bye']:
             return "exit"
         if line.lower() in ['help', 'h']:
             return "?"
-
         return line
 
     def print_help(self):
@@ -67,28 +79,36 @@ class CLISimulator(cmd.Cmd):
     def do_exit(self, args):
         self.logger.info("Exiting CLI Simulator")
         print("שומר את מצב המכשיר...")
-        self.data_manager.save_device_state()
+        try:
+            self.data_manager.save_device_state()
+            print("מצב המכשיר נשמר בהצלחה.")
+        except Exception as e:
+            self.logger.error(f"Error saving device state: {str(e)}")
+            print(f"שגיאה בשמירת מצב המכשיר: {str(e)}")
         print("ביי!")
         return True
 
     def default(self, line):
         self.logger.debug(f"Executing command: {line}")
-        result = self.command_parser.parse_command(line, self.device_type, self.mode)
-        if result:
-            print(result)
-            # בדוק אם התוצאה מכילה שינוי במצב
-            if "Entering" in result or "Exiting" in result:
-                self.update_mode(result)
-        else:
-            self.logger.warning(f"Unknown command: {line}")
-            print(f"פקודה לא מוכרת: {line}")
-            suggestions = self.suggest_correction(line)
-            if suggestions:
-                print("האם התכוונת לאחת מהפקודות הבאות?")
-                for suggestion in suggestions:
-                    print(f"- {suggestion}")
+        try:
+            result = self.command_parser.parse_command(line, self.device_type, self.mode)
+            if result:
+                print(result)
+                if "Entering" in result or "Exiting" in result:
+                    self.update_mode(result)
             else:
-                print("לא נמצאו הצעות לתיקון. הקלד '?' לעזרה.")
+                self.logger.warning(f"Unknown command: {line}")
+                print(f"פקודה לא מוכרת: {line}")
+                suggestions = self.suggest_correction(line)
+                if suggestions:
+                    print("האם התכוונת לאחת מהפקודות הבאות?")
+                    for suggestion in suggestions:
+                        print(f"- {suggestion}")
+                else:
+                    print("לא נמצאו הצעות לתיקון. הקלד '?' לעזרה.")
+        except Exception as e:
+            self.logger.error(f"Error executing command: {str(e)}")
+            print(f"שגיאה בביצוע הפקודה: {str(e)}")
 
     def update_mode(self, result):
         if "Entering privileged mode" in result:
@@ -135,21 +155,28 @@ class CLISimulator(cmd.Cmd):
             self.prompt = f"{self.hostname}(config-vlan)# "
         elif self.mode == "router":
             self.prompt = f"{self.hostname}(config-router)# "
-        # הוסף כאן עוד מצבים לפי הצורך
 
     def do_hostname(self, arg):
         if self.mode == "config":
-            self.hostname = arg
-            self.data_manager.update_hostname(arg)
-            self.update_prompt()
-            self.logger.info(f"Hostname set to {arg}")
-            print(f"Hostname set to {arg}")
+            try:
+                self.hostname = arg
+                self.data_manager.update_hostname(arg)
+                self.update_prompt()
+                self.logger.info(f"Hostname set to {arg}")
+                print(f"Hostname set to {arg}")
+            except Exception as e:
+                self.logger.error(f"Error setting hostname: {str(e)}")
+                print(f"שגיאה בהגדרת שם המארח: {str(e)}")
         else:
             print("Command available only in configuration mode")
 
     def do_show(self, arg):
-        result = self.command_parser.parse_command(f"show {arg}", self.device_type, self.mode)
-        print(result)
+        try:
+            result = self.command_parser.parse_command(f"show {arg}", self.device_type, self.mode)
+            print(result)
+        except Exception as e:
+            self.logger.error(f"Error executing show command: {str(e)}")
+            print(f"שגיאה בביצוע פקודת show: {str(e)}")
 
 if __name__ == "__main__":
     simulator = CLISimulator()
