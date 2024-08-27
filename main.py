@@ -1,6 +1,10 @@
-import cli_simulator
+# main.py
 
-def main():
+import cmd
+import cli_simulator
+from gui import main as gui_main
+
+def text_interface():
     # יצירת לולאה ראשית שמקבלת קלט מהמשתמש ומעבירה אותו למעבד הפקודות
     simulator = cli_simulator.CLISimulator()
 
@@ -35,4 +39,8 @@ def main():
     simulator.start()
 
 if __name__ == "__main__":
-    main()
+    # הפעלת הממשק הגרפי
+    gui_main()
+    
+    # אם תרצה להפעיל את הממשק הטקסטואלי במקום, השתמש בשורה הבאה:
+    # text_interface()
