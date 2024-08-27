@@ -166,32 +166,6 @@ class DataManager:
         interfaces.pop(name, None)
         self.update_device_state("interfaces", interfaces)
 
-    def add_route(self, destination, next_hop, metric=1):
-        """
-        מוסיף נתיב חדש לטבלת הניתוב.
-
-        :param destination: היעד
-        :param next_hop: הקפיצה הבאה
-        :param metric: המטריקה של הנתיב (ברירת מחדל: 1)
-        """
-        routing_table = self.get_device_state("routing_table") or []
-        routing_table.append({
-            "destination": destination,
-            "next_hop": next_hop,
-            "metric": metric
-        })
-        self.update_device_state("routing_table", routing_table)
-
-    def remove_route(self, destination):
-        """
-        מסיר נתיב מטבלת הניתוב.
-
-        :param destination: היעד של הנתיב להסרה
-        """
-        routing_table = self.get_device_state("routing_table") or []
-        routing_table = [route for route in routing_table if route["destination"] != destination]
-        self.update_device_state("routing_table", routing_table)
-
     def __del__(self):
         """סוגר את החיבור למסד הנתונים בעת השמדת האובייקט."""
         self.conn.close()
